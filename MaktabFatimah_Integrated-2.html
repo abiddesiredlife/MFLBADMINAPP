@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Maktab Fatimah – Oral Examination &amp; Certificate System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+/* ===================== GLOBAL RESET ===================== */
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --gold:#c9a84c;--gold2:#e8c96d;--gold3:#a07830;
+  --navy:#1a2744;--navy2:#243057;--navy3:#0f1a30;
+  --cream:#fdf6e3;--cream2:#f5ead0;--cream3:#ede0c4;
+  --green:#2d6a4f;--red:#8b1a1a;--white:#fff;
+  --text:#2c1810;--text2:#5a3e28;--text3:#8a6a4a;
+  --shadow:0 4px 24px rgba(26,39,68,0.15);
+  --shadow2:0 8px 40px rgba(26,39,68,0.22);
+  --radius:12px;--radius2:20px;
+  --font-heading:'Cinzel',serif;
+  --font-body:'Crimson Pro',serif;
+  --font-arabic:'Amiri',serif;
+  --transition:0.25s ease;
+}
+html,body{height:100%;font-family:var(--font-body);background:var(--navy3);color:var(--text);font-size:16px;}
+body{overflow-x:hidden;}
+/* ===================== LAYOUT ===================== */
+#app{min-height:100vh;display:flex;flex-direction:column;}
+.page{display:none;min-height:100vh;}
+.page.active{display:flex;flex-direction:column;}
+
+/* ===================== LOGIN PAGE ===================== */
+#loginPage{background:linear-gradient(135deg,var(--navy3) 0%,var(--navy) 60%,var(--navy2) 100%);align-items:center;justify-content:center;padding:20px;}
+.login-wrap{background:rgba(253,246,227,0.07);border:1px solid rgba(201,168,76,0.3);border-radius:var(--radius2);padding:48px 40px;max-width:440px;width:100%;backdrop-filter:blur(16px);box-shadow:var(--shadow2),0 0 60px rgba(201,168,76,0.08);}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-logo .arabic-title{font-family:var(--font-arabic);font-size:2rem;color:var(--gold2);line-height:1.8;direction:rtl;text-shadow:0 2px 12px rgba(201,168,76,0.4);}
+.login-logo .en-title{font-family:var(--font-heading);font-size:1rem;letter-spacing:3px;color:var(--cream3);margin-top:8px;}
+.login-logo .sub-title{font-size:0.8rem;color:var(--text3);letter-spacing:2px;margin-top:4px;}
+.gold-divider{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:20px 0;}
+.login-wrap h2{font-family:var(--font-heading);color:var(--cream);font-size:1.1rem;letter-spacing:2px;text-align:center;margin-bottom:24px;}
+.form-group{margin-bottom:18px;}
+.form-group label{display:block;font-size:0.82rem;color:var(--cream3);letter-spacing:1px;margin-bottom:6px;font-family:var(--font-heading);}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.07);border:1px solid rgba(201,168,76,0.25);border-radius:8px;color:var(--cream);font-family:var(--font-body);font-size:1rem;transition:var(--transition);outline:none;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--gold);background:rgba(255,255,255,0.1);box-shadow:0 0 0 3px rgba(201,168,76,0.15);}
+.form-group select option{background:var(--navy2);color:var(--cream);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-family:var(--font-heading);font-size:0.85rem;letter-spacing:1.5px;transition:var(--transition);text-decoration:none;}
+.btn-gold{background:linear-gradient(135deg,var(--gold3),var(--gold),var(--gold2));color:var(--navy3);font-weight:700;}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,0.4);}
+.btn-navy{background:linear-gradient(135deg,var(--navy),var(--navy2));color:var(--cream);border:1px solid rgba(201,168,76,0.2);}
+.btn-navy:hover{border-color:var(--gold);box-shadow:0 4px 16px rgba(26,39,68,0.4);}
+.btn-green{background:linear-gradient(135deg,#2d6a4f,#40916c);color:#fff;}
+.btn-green:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(45,106,79,0.4);}
+.btn-red{background:linear-gradient(135deg,#8b1a1a,#c0392b);color:#fff;}
+.btn-red:hover{transform:translateY(-1px);}
+.btn-sm{padding:7px 14px;font-size:0.75rem;}
+.btn-full{width:100%;}
+.login-roles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;}
+.role-btn{padding:16px;border:1px solid rgba(201,168,76,0.2);border-radius:var(--radius);background:rgba(255,255,255,0.04);cursor:pointer;text-align:center;transition:var(--transition);color:var(--cream);}
+.role-btn:hover,.role-btn.active{border-color:var(--gold);background:rgba(201,168,76,0.1);}
+.role-btn .role-icon{font-size:1.8rem;display:block;margin-bottom:8px;}
+.role-btn span{font-family:var(--font-heading);font-size:0.78rem;letter-spacing:1px;display:block;}
+
+/* ===================== MAIN APP HEADER ===================== */
+.app-header{background:linear-gradient(135deg,var(--navy3),var(--navy));border-bottom:1px solid rgba(201,168,76,0.3);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
+.header-brand{display:flex;align-items:center;gap:12px;}
+.header-brand .arabic{font-family:var(--font-arabic);color:var(--gold2);font-size:1.1rem;direction:rtl;}
+.header-brand .en{font-family:var(--font-heading);color:var(--cream3);font-size:0.7rem;letter-spacing:2px;}
+.header-actions{display:flex;align-items:center;gap:8px;}
+.sync-badge{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:0.72rem;font-family:var(--font-heading);letter-spacing:1px;}
+.sync-badge.online{background:rgba(45,106,79,0.25);border:1px solid rgba(45,106,79,0.5);color:#52b788;}
+.sync-badge.offline{background:rgba(139,26,26,0.25);border:1px solid rgba(139,26,26,0.5);color:#e07070;}
+.sync-badge.syncing{background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:var(--gold2);}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+.sync-dot.pulse{animation:pulse 1.2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.user-chip{display:flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(201,168,76,0.15);border-radius:20px;color:var(--cream3);font-size:0.8rem;cursor:pointer;}
+
+/* ===================== NAV TABS ===================== */
+.nav-tabs{background:var(--navy2);border-bottom:1px solid rgba(201,168,76,0.2);display:flex;overflow-x:auto;scrollbar-width:none;}
+.nav-tabs::-webkit-scrollbar{display:none;}
+.nav-tab{padding:14px 20px;font-family:var(--font-heading);font-size:0.75rem;letter-spacing:1.5px;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:var(--transition);display:flex;align-items:center;gap:6px;}
+.nav-tab:hover{color:var(--cream);}
+.nav-tab.active{color:var(--gold2);border-bottom-color:var(--gold);}
+.tab-icon{font-size:1rem;}
+
+/* ===================== CONTENT AREA ===================== */
+.content-area{flex:1;padding:20px;max-width:1100px;margin:0 auto;width:100%;}
+.section{display:none;}
+.section.active{display:block;}
+
+/* ===================== CARDS ===================== */
+.card{background:linear-gradient(145deg,rgba(253,246,227,0.06),rgba(253,246,227,0.02));border:1px solid rgba(201,168,76,0.15);border-radius:var(--radius2);padding:24px;margin-bottom:20px;backdrop-filter:blur(8px);}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid rgba(201,168,76,0.15);}
+.card-title{font-family:var(--font-heading);color:var(--gold2);font-size:1rem;letter-spacing:2px;display:flex;align-items:center;gap:8px;}
+.card-actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* ===================== TABLE ===================== */
+.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid rgba(201,168,76,0.12);}
+table{width:100%;border-collapse:collapse;font-size:0.9rem;}
+thead th{background:rgba(201,168,76,0.12);padding:12px 14px;text-align:left;font-family:var(--font-heading);font-size:0.72rem;letter-spacing:1.5px;color:var(--gold2);white-space:nowrap;}
+tbody tr{border-bottom:1px solid rgba(201,168,76,0.07);transition:var(--transition);}
+tbody tr:hover{background:rgba(201,168,76,0.05);}
+tbody td{padding:11px 14px;color:var(--cream3);vertical-align:middle;}
+.action-btns{display:flex;gap:6px;flex-wrap:wrap;}
+
+/* ===================== GRADE BADGE ===================== */
+.grade-badge{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;font-family:var(--font-heading);font-weight:700;font-size:0.9rem;}
+.grade-A{background:rgba(45,106,79,0.3);border:1px solid #40916c;color:#74c69d;}
+.grade-B{background:rgba(201,168,76,0.2);border:1px solid var(--gold);color:var(--gold2);}
+.grade-C{background:rgba(100,80,40,0.3);border:1px solid #8a6a3a;color:#c9a56a;}
+.grade-F{background:rgba(139,26,26,0.3);border:1px solid #8b1a1a;color:#e07070;}
+
+/* ===================== RANK BADGE ===================== */
+.rank-badge{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-size:0.8rem;font-weight:700;}
+.rank-1{background:linear-gradient(135deg,#c9a84c,#e8c96d);color:var(--navy3);}
+.rank-2{background:linear-gradient(135deg,#9e9e9e,#d4d4d4);color:var(--navy3);}
+.rank-3{background:linear-gradient(135deg,#cd7f32,#e8a060);color:var(--navy3);}
+
+/* ===================== STATS ROW ===================== */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px;}
+.stat-card{background:linear-gradient(145deg,rgba(201,168,76,0.1),rgba(201,168,76,0.04));border:1px solid rgba(201,168,76,0.2);border-radius:var(--radius);padding:18px;text-align:center;}
+.stat-val{font-family:var(--font-heading);font-size:2rem;color:var(--gold2);line-height:1;}
+.stat-lbl{font-size:0.75rem;color:var(--text3);margin-top:4px;letter-spacing:1px;}
+
+/* ===================== MARKS ENTRY ===================== */
+.exam-student-info{background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:var(--radius);padding:16px;margin-bottom:20px;}
+.exam-student-info h3{font-family:var(--font-heading);color:var(--gold2);font-size:1rem;letter-spacing:1px;margin-bottom:8px;}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;}
+.info-item{font-size:0.85rem;color:var(--cream3);}
+.info-item strong{color:var(--gold);display:block;font-size:0.72rem;letter-spacing:1px;font-family:var(--font-heading);}
+.subject-marks-grid{display:grid;gap:14px;}
+.subject-mark-card{background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.12);border-radius:var(--radius);padding:16px;}
+.subject-mark-card h4{font-family:var(--font-heading);color:var(--cream);font-size:0.85rem;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.mark-input-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.mark-input-row label{font-size:0.8rem;color:var(--text3);min-width:80px;}
+.mark-input{width:90px;padding:8px 12px;background:rgba(255,255,255,0.07);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:var(--cream);font-size:1rem;text-align:center;outline:none;font-family:var(--font-heading);}
+.mark-input:focus{border-color:var(--gold);background:rgba(255,255,255,0.1);}
+.mark-display{font-family:var(--font-heading);color:var(--gold2);font-size:1.1rem;min-width:60px;}
+
+/* ===================== SEARCH BOX ===================== */
+.search-box{position:relative;margin-bottom:16px;}
+.search-box input{width:100%;padding:12px 16px 12px 44px;background:rgba(255,255,255,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:8px;color:var(--cream);font-family:var(--font-body);font-size:1rem;outline:none;transition:var(--transition);}
+.search-box input:focus{border-color:var(--gold);}
+.search-box::before{content:'🔍';position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1rem;opacity:0.6;}
+.search-results{background:var(--navy2);border:1px solid rgba(201,168,76,0.2);border-radius:8px;max-height:240px;overflow-y:auto;position:absolute;width:100%;z-index:50;top:calc(100% + 4px);}
+.search-item{padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(201,168,76,0.08);color:var(--cream3);font-size:0.9rem;transition:var(--transition);}
+.search-item:hover{background:rgba(201,168,76,0.1);color:var(--gold2);}
+
+/* ===================== MODAL ===================== */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,15,30,0.85);z-index:200;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:linear-gradient(145deg,var(--navy2),var(--navy3));border:1px solid rgba(201,168,76,0.3);border-radius:var(--radius2);padding:28px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow2);}
+.modal-title{font-family:var(--font-heading);color:var(--gold2);font-size:1rem;letter-spacing:2px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid rgba(201,168,76,0.15);}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid rgba(201,168,76,0.1);}
+
+/* ===================== TOAST ===================== */
+#toastContainer{position:fixed;bottom:24px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px;}
+.toast{padding:12px 20px;border-radius:8px;font-size:0.85rem;font-family:var(--font-heading);letter-spacing:0.5px;animation:slideIn 0.3s ease;box-shadow:var(--shadow);}
+.toast.success{background:rgba(45,106,79,0.95);color:#fff;border-left:3px solid #52b788;}
+.toast.error{background:rgba(139,26,26,0.95);color:#fff;border-left:3px solid #e07070;}
+.toast.info{background:rgba(26,39,68,0.97);color:var(--cream);border:1px solid rgba(201,168,76,0.3);}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ===================== LEADERBOARD ===================== */
+.leader-row{display:flex;align-items:center;gap:14px;padding:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.1);border-radius:var(--radius);margin-bottom:10px;transition:var(--transition);}
+.leader-row:hover{background:rgba(201,168,76,0.07);}
+.leader-rank{font-family:var(--font-heading);font-size:1.3rem;width:36px;text-align:center;}
+.leader-info{flex:1;}
+.leader-name{font-family:var(--font-heading);color:var(--cream);font-size:0.95rem;}
+.leader-class{font-size:0.78rem;color:var(--text3);}
+.leader-score{text-align:right;}
+.leader-pct{font-family:var(--font-heading);font-size:1.2rem;color:var(--gold2);}
+.leader-grade-wrap{font-size:0.78rem;color:var(--text3);}
+.topper-glow{box-shadow:0 0 20px rgba(201,168,76,0.15);border-color:rgba(201,168,76,0.3);}
+
+/* ===================== PROGRESS BAR ===================== */
+.progress-bar{background:rgba(255,255,255,0.08);border-radius:20px;height:6px;overflow:hidden;margin-top:4px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold3),var(--gold2));border-radius:20px;transition:width 0.5s ease;}
+
+/* ===================== QUESTION TAGS ===================== */
+.question-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.2);border-radius:20px;font-size:0.78rem;color:var(--cream3);margin:3px;}
+.question-tag button{background:none;border:none;color:var(--red);cursor:pointer;font-size:0.9rem;padding:0;line-height:1;}
+
+/* ===================== CONFIG AREA ===================== */
+.config-area{background:rgba(255,255,255,0.02);border:1px dashed rgba(201,168,76,0.2);border-radius:var(--radius);padding:16px;font-size:0.82rem;color:var(--text3);}
+.config-area code{background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;color:var(--gold2);font-family:monospace;}
+
+/* ===================== GROUP BADGE ===================== */
+.group-badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:12px;font-size:0.75rem;font-family:var(--font-heading);letter-spacing:1px;}
+.group-A{background:rgba(45,106,79,0.2);border:1px solid rgba(45,106,79,0.4);color:#74c69d;}
+.group-B{background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);color:var(--gold2);}
+.group-C{background:rgba(107,45,42,0.2);border:1px solid rgba(107,45,42,0.4);color:#e08070;}
+
+/* ===================== MOBILE ===================== */
+@media(max-width:600px){
+  .content-area{padding:14px;}
+  .card{padding:16px;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .login-wrap{padding:28px 20px;}
+  .modal{padding:20px;}
+  .btn{padding:10px 16px;font-size:0.78rem;}
+  .nav-tab{padding:12px 14px;font-size:0.7rem;}
+}
+
+/* =====================================================================
+   CERTIFICATE STYLES — Exact from index(11) — DO NOT ALTER
+   ===================================================================== */
+#certificate{
+  width:1000px;height:707px;
+  position:relative;overflow:hidden;
+  box-shadow:0 25px 80px rgba(0,0,0,.6);
+}
+.cert-outer-border{position:absolute;inset:12px;z-index:2;}
+.cert-inner-border{position:absolute;inset:21px;z-index:2;}
+.cert-corner{position:absolute;width:70px;height:70px;z-index:3;}
+.cert-tl{top:12px;left:12px;border-top:2px solid;border-left:2px solid;}
+.cert-tr{top:12px;right:12px;border-top:2px solid;border-right:2px solid;}
+.cert-bl{bottom:12px;left:12px;border-bottom:2px solid;border-left:2px solid;}
+.cert-br{bottom:12px;right:12px;border-bottom:2px solid;border-right:2px solid;}
+.cert-content{position:absolute;inset:0;padding:22px 68px 120px;display:flex;flex-direction:column;z-index:4;overflow:hidden;}
+.cert-watermark{position:absolute;top:54%;left:50%;transform:translate(-50%,-50%);width:360px;height:360px;opacity:.05;z-index:1;pointer-events:none;mix-blend-mode:multiply;}
+.cert-texture{position:absolute;inset:0;opacity:.07;background-image:radial-gradient(circle at 20px 20px,#d4af37 1px,transparent 0);background-size:55px 55px;}
+.cert-header-overlay{position:absolute;top:0;left:0;right:0;height:115px;background:linear-gradient(180deg,rgba(5,15,30,.72) 0%,rgba(10,31,61,.48) 40%,rgba(10,31,61,.10) 78%,rgba(10,31,61,0) 100%);z-index:1;}
+
+/* BASIC THEME */
+#certificate.basic-theme{background:#ffffff;}
+#certificate.basic-theme .cert-outer-border{border:2px solid #c9a84c;}
+#certificate.basic-theme .cert-inner-border{border:1px solid rgba(201,168,76,.35);}
+#certificate.basic-theme .cert-corner{border-color:#c9a84c;}
+#certificate.basic-theme .cert-texture{display:none;}
+#certificate.basic-theme .cert-header-overlay{display:none;}
+#certificate.basic-theme .cert-watermark{filter:grayscale(100%) sepia(10%) brightness(.65) contrast(1.1);mix-blend-mode:multiply;}
+#certificate.basic-theme .p-layer{display:none!important;}
+
+#certificate.basic-theme .b-header{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:18px;margin-bottom:4px;}
+#certificate.basic-theme .b-logo{width:60px;height:60px;object-fit:contain;}
+#certificate.basic-theme .b-header-text{text-align:left;}
+#certificate.basic-theme .b-arabic{font-family:'Amiri',serif;font-size:26px;line-height:1.3;direction:rtl;unicode-bidi:isolate;color:#b8860b;}
+#certificate.basic-theme .b-english{font-family:'Cinzel',serif;font-size:14px;font-weight:700;letter-spacing:.15em;color:#0a1f3d;margin-top:1px;}
+#certificate.basic-theme .b-tagline{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:.18em;color:#5a7090;margin-top:2px;}
+#certificate.basic-theme .b-rule{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.55),transparent);margin:8px 0 6px;}
+#certificate.basic-theme .b-cert-title{font-family:'Cinzel',serif;font-size:32px;font-weight:700;letter-spacing:.25em;color:#0a1f3d;text-align:center;margin-bottom:0;}
+#certificate.basic-theme .b-of-achievement{font-family:'Cinzel',serif;font-size:10px;font-weight:400;letter-spacing:.30em;color:#5a7090;text-align:center;margin-bottom:10px;}
+#certificate.basic-theme .b-intro{font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:#3a3a3a;text-align:center;margin-bottom:4px;}
+#certificate.basic-theme .b-name{font-family:'Great Vibes',cursive;font-size:64px;color:#7a1f1f;text-align:center;line-height:1.0;margin-bottom:2px;}
+#certificate.basic-theme .b-name-line{width:380px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.55),transparent);margin:0 auto 10px;}
+#certificate.basic-theme .b-body{font-family:'Cormorant Garamond',serif;font-size:14.5px;line-height:1.85;color:#2a2a2a;text-align:center;max-width:680px;margin:0 auto;}
+#certificate.basic-theme .b-grade{font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:#0a1f3d;text-align:center;letter-spacing:.12em;margin-top:10px;}
+#certificate.basic-theme .b-footer{position:absolute;bottom:38px;left:80px;right:80px;display:flex;justify-content:space-between;align-items:flex-end;z-index:6;}
+#certificate.basic-theme .b-sig-block{display:flex;flex-direction:column;align-items:center;position:relative;z-index:5;}
+#certificate.basic-theme .b-sig-img-wrap{display:flex;align-items:flex-end;justify-content:center;height:50px;margin-bottom:2px;position:relative;z-index:5;}
+#certificate.basic-theme .b-sig-line{width:160px;height:1px;background:linear-gradient(90deg,transparent,rgba(10,31,61,.30),transparent);margin-bottom:6px;display:block;position:relative;z-index:4;}
+#certificate.basic-theme .b-sig-role{font-family:'Cinzel',serif;font-size:10px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;color:#0a1f3d;text-align:center;}
+#certificate.basic-theme .b-sig-sub{font-family:'Cormorant Garamond',serif;font-size:11px;color:#4a4a4a;text-align:center;margin-top:1px;}
+#certificate.basic-theme .b-info-row{display:flex;justify-content:center;align-items:stretch;width:78%;margin:14px auto 0;border:1px solid rgba(201,168,76,.38);background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(201,168,76,.06));box-shadow:0 2px 8px rgba(201,168,76,.08);}
+#certificate.basic-theme .b-info-box{flex:1;padding:10px 12px;text-align:center;min-width:0;}
+#certificate.basic-theme .b-info-box+.b-info-box{border-left:1px solid rgba(201,168,76,.38);}
+#certificate.basic-theme .b-info-label{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(10,31,61,.55);margin-bottom:4px;}
+#certificate.basic-theme .b-info-value{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;font-style:italic;line-height:1.3;color:#0a1f3d;word-break:break-word;}
+#certificate.basic-theme .b-cert-id{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-family:'Cormorant Garamond',serif;font-size:10px;color:#9a9a9a;letter-spacing:.12em;z-index:5;}
+
+/* PREMIUM THEME */
+#certificate.premium-theme{background:linear-gradient(145deg,#fdf8ee,#f6edda,#eedfc4,#f4ead5);}
+#certificate.premium-theme .cert-outer-border{border:2px solid rgba(212,175,55,1);box-shadow:inset 0 0 0 5px rgba(212,175,55,.10),0 0 0 1px rgba(180,140,20,.20);}
+#certificate.premium-theme .cert-inner-border{border:1px solid rgba(212,175,55,.55);box-shadow:inset 0 0 22px rgba(212,175,55,.06);}
+#certificate.premium-theme .cert-corner{border-color:rgba(212,175,55,.94);width:80px;height:80px;}
+#certificate.premium-theme .cert-watermark{filter:grayscale(100%) sepia(25%) brightness(.82) contrast(1.05);mix-blend-mode:multiply;top:56%;width:400px;height:400px;opacity:.08;}
+#certificate.premium-theme::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 0%,rgba(212,175,55,.08) 0%,transparent 65%),radial-gradient(ellipse at 50% 100%,rgba(180,130,10,.06) 0%,transparent 60%);z-index:0;}
+#certificate.premium-theme .b-layer{display:none!important;}
+
+/* Premium elements */
+.p-header{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:10px;margin-bottom:14px;position:relative;z-index:3;}
+.p-logo{width:82px;height:82px;object-fit:contain;background:radial-gradient(circle,rgba(255,248,220,.18),rgba(255,248,220,.02));padding:6px;border-radius:50%;border:1px solid rgba(212,175,55,.22);filter:drop-shadow(0 4px 18px rgba(212,175,55,.30)) brightness(1.10) contrast(1.05);}
+.p-header-text{background:linear-gradient(180deg,#2a1e08 0%,#3d2c0a 12%,#4a3610 28%,#3a2a0c 55%,#251a06 78%,#1a1106 100%);padding:10px 34px 14px;border-radius:2px;box-shadow:0 14px 36px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,235,140,.28),inset 0 -1px 0 rgba(0,0,0,.45),inset 1px 0 0 rgba(255,220,80,.12),inset -1px 0 0 rgba(255,220,80,.12),0 0 0 1px rgba(180,140,20,.55);border:1px solid rgba(255,230,100,.30);text-align:center;}
+.p-arabic{font-family:'Amiri',serif;font-size:42px;line-height:1.65;direction:rtl;unicode-bidi:isolate;padding-top:4px;padding-bottom:8px;color:#ffe680;text-shadow:0 0 10px rgba(255,230,60,.80),0 0 20px rgba(255,200,30,.50),0 1px 0 rgba(255,255,200,.90),0 -1px 0 rgba(0,0,0,.70),0 2px 4px rgba(0,0,0,.95),0 4px 12px rgba(0,0,0,.80);}
+.p-english{font-family:'Cinzel',serif;font-size:19px;font-weight:700;letter-spacing:.20em;margin-top:4px;color:#ffd740;text-shadow:0 0 8px rgba(255,215,40,.70),0 0 18px rgba(255,190,20,.40),0 1px 0 rgba(255,255,180,.85),0 2px 4px rgba(0,0,0,.95),0 4px 10px rgba(0,0,0,.75);}
+.p-tagline{font-size:10px;letter-spacing:.22em;margin-top:4px;font-style:italic;font-weight:500;color:#fff8d0;text-shadow:0 0 8px rgba(255,220,80,.65),0 1px 3px rgba(0,0,0,.90),0 2px 6px rgba(0,0,0,.70);opacity:1;}
+.p-title{text-align:center;font-family:'Cinzel',serif;font-size:22px;font-weight:700;letter-spacing:.28em;margin-top:10px;margin-bottom:14px;text-transform:uppercase;color:#ffffff;text-shadow:0 1px 0 rgba(255,255,255,.45),0 2px 8px rgba(0,0,0,.38),0 0 14px rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;gap:18px;position:relative;padding:8px 0;background:linear-gradient(90deg,rgba(10,31,61,0) 0%,rgba(6,22,48,.98) 16%,rgba(10,38,70,1) 50%,rgba(6,22,48,.98) 84%,rgba(10,31,61,0) 100%);width:100%;}
+.p-title::before,.p-title::after{content:"";width:110px;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,1),transparent);opacity:1;display:inline-block;vertical-align:middle;margin:0 12px;}
+.p-intro{text-align:center;font-size:17px;font-style:italic;color:#544131;}
+.p-name{text-align:center;font-family:'Great Vibes',cursive;font-size:56px;color:#5a2020;margin-top:10px;text-shadow:0 2px 12px rgba(107,45,42,.20),0 0 20px rgba(107,45,42,.06);line-height:1.05;}
+.p-name-line{width:420px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.9),transparent);margin:4px auto 10px;}
+.p-relation{text-align:center;font-size:17px;font-style:italic;color:#5a4638;}
+.p-body{max-width:700px;margin:12px auto 0;padding:0 10px;text-align:center;font-size:13.5px;line-height:1.75;color:#3b2a1e;}
+.p-info-row{display:flex;justify-content:center;align-items:stretch;width:82%;margin:12px auto 0;border:1px solid rgba(212,175,55,.42);background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(212,175,55,.08));box-shadow:0 2px 10px rgba(212,175,55,.06);}
+.p-info-box{flex:1;padding:12px 14px;text-align:center;min-width:0;}
+.p-info-box+.p-info-box{border-left:1px solid rgba(212,175,55,.42);}
+.p-info-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:rgba(10,31,61,.62);margin-bottom:5px;}
+.p-info-value{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;font-style:italic;line-height:1.3;color:#0d2747;word-break:break-word;}
+.p-footer{position:absolute;bottom:30px;left:68px;right:68px;display:flex;justify-content:space-between;align-items:flex-end;gap:18px;z-index:10;}
+.p-sig-block{flex:1;max-width:280px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;}
+.p-sig-img-wrap{display:flex;align-items:flex-end;justify-content:center;height:70px;margin-bottom:2px;position:relative;z-index:5;}
+.p-sig-img{display:block;object-fit:contain;opacity:.94;height:66px;max-width:180px;position:relative;z-index:5;}
+.p-sig-line{width:175px;height:1px;background:linear-gradient(90deg,transparent,rgba(10,31,61,.42),transparent);margin:2px auto 6px;position:relative;z-index:4;display:block;}
+.p-sig-role{font-family:'Cinzel',serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;line-height:1.2;margin-bottom:4px;color:#3c3027;}
+.p-sig-school{font-family:'Great Vibes',cursive;font-size:20px;line-height:1.08;color:#7a4d49;max-width:240px;}
+.p-sig-school-sm{font-family:'Great Vibes',cursive;font-size:17px;line-height:1.08;color:#7a4d49;max-width:240px;}
+.p-sig-trust{font-family:'Playfair Display',serif;font-size:11px;font-style:italic;line-height:1.2;color:#6b5648;margin-top:2px;}
+.p-cert-id{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-family:'Cormorant Garamond',serif;font-size:10px;color:#9a9a9a;letter-spacing:.12em;z-index:10;}
+
+.p-layer{display:none;}
+.b-layer{}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ===================== LOGIN PAGE ===================== -->
+<div id="loginPage" class="page active">
+  <div class="login-wrap">
+    <div class="login-logo">
+      <div class="arabic-title">مَكْتَبُ فَاطِمَةَ لِلْبَنَاتِ</div>
+      <div class="en-title">MAKTAB FATIMAH LIL BANAT</div>
+      <div class="sub-title">KHAMMAM · TELANGANA</div>
+    </div>
+    <div class="gold-divider"></div>
+    <h2>EXAMINATION PORTAL</h2>
+    <div class="form-group">
+      <label>USERNAME</label>
+      <input type="text" id="loginUser" placeholder="Enter username" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label>PASSWORD</label>
+      <input type="password" id="loginPass" placeholder="Enter password">
+    </div>
+    <div class="login-roles">
+      <div class="role-btn active" data-role="admin" onclick="selectRole(this)">
+        <span class="role-icon">👑</span>
+        <span>ADMIN</span>
+      </div>
+      <div class="role-btn" data-role="examiner" onclick="selectRole(this)">
+        <span class="role-icon">✏️</span>
+        <span>EXAMINER</span>
+      </div>
+    </div>
+    <div class="gold-divider"></div>
+    <button class="btn btn-gold btn-full" onclick="doLogin()">ENTER PORTAL</button>
+    <p style="text-align:center;margin-top:14px;font-size:0.75rem;color:var(--text3);">Demo: admin/admin or examiner/exam123</p>
+  </div>
+</div>
+
+<!-- ===================== MAIN APP ===================== -->
+<div id="mainPage" class="page">
+  <div class="app-header">
+    <div class="header-brand">
+      <div>
+        <div class="arabic" style="font-size:0.95rem;">مَكْتَبُ فَاطِمَةَ</div>
+        <div class="en" style="font-size:0.6rem;letter-spacing:1.5px;">EXAMINATION SYSTEM</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div id="syncBadge" class="sync-badge offline">
+        <div class="sync-dot"></div>
+        <span id="syncText">OFFLINE</span>
+      </div>
+      <div class="user-chip" onclick="doLogout()">
+        <span id="currentUserChip">Admin</span>
+        <span style="font-size:0.7rem;opacity:0.5;">✕</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-tabs" id="navTabs">
+    <div class="nav-tab active" data-tab="dashboard" onclick="switchTab(this)"><span class="tab-icon">📊</span>DASHBOARD</div>
+    <div class="nav-tab" data-tab="students" onclick="switchTab(this)"><span class="tab-icon">👩‍🎓</span>STUDENTS</div>
+    <div class="nav-tab" data-tab="subjects" onclick="switchTab(this)" id="tabSubjects"><span class="tab-icon">📖</span>SUBJECTS</div>
+    <div class="nav-tab" data-tab="examiner" onclick="switchTab(this)"><span class="tab-icon">✍️</span>ORAL EXAM</div>
+    <div class="nav-tab" data-tab="marks" onclick="switchTab(this)"><span class="tab-icon">📋</span>MARKS</div>
+    <div class="nav-tab" data-tab="leaderboard" onclick="switchTab(this)"><span class="tab-icon">🏆</span>LEADERBOARD</div>
+    <div class="nav-tab" data-tab="certificates" onclick="switchTab(this)" id="tabCerts"><span class="tab-icon">📜</span>CERTIFICATES</div>
+    <div class="nav-tab" data-tab="settings" onclick="switchTab(this)" id="tabSettings"><span class="tab-icon">⚙️</span>SETTINGS</div>
+  </div>
+
+  <div class="content-area">
+
+    <!-- DASHBOARD -->
+    <div id="sec-dashboard" class="section active">
+      <div class="stats-row" id="statsRow"></div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">📊 OVERVIEW</div></div>
+        <div id="overviewContent"></div>
+      </div>
+    </div>
+
+    <!-- STUDENTS -->
+    <div id="sec-students" class="section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">👩‍🎓 STUDENT MANAGEMENT</div>
+          <div class="card-actions">
+            <button class="btn btn-gold btn-sm" id="addStudentBtn" onclick="openModal('studentModal')">+ ADD STUDENT</button>
+          </div>
+        </div>
+        <div class="search-box" style="position:relative;">
+          <input type="text" id="studentSearch" placeholder="Search students..." oninput="renderStudentsTable()">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>#</th><th>NAME</th><th>FATHER</th><th>GROUP</th><th>ROLL</th><th>MARKS</th><th>GRADE</th><th>ACTIONS</th></tr>
+            </thead>
+            <tbody id="studentsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUBJECTS -->
+    <div id="sec-subjects" class="section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📖 GROUP-WISE SUBJECTS</div>
+        </div>
+        <div id="subjectsGrid"></div>
+      </div>
+    </div>
+
+    <!-- EXAMINER -->
+    <div id="sec-examiner" class="section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">✍️ ORAL EXAMINATION ENTRY</div>
+          <div class="card-actions">
+            <button class="btn btn-navy btn-sm" onclick="openModal('quickAddStudentModal')">+ QUICK ADD</button>
+          </div>
+        </div>
+        <div style="position:relative;">
+          <div class="search-box">
+            <input type="text" id="examStudentSearch" placeholder="Search student to enter marks..." oninput="examSearch()" autocomplete="off">
+          </div>
+          <div id="examSearchResults" class="search-results" style="display:none;"></div>
+        </div>
+        <div id="examPanel"></div>
+      </div>
+    </div>
+
+    <!-- MARKS -->
+    <div id="sec-marks" class="section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📋 MARKS REGISTER</div>
+          <div class="card-actions">
+            <button class="btn btn-navy btn-sm" onclick="exportMarksCSV()">⬇ EXPORT CSV</button>
+          </div>
+        </div>
+        <div id="marksContent"></div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div id="sec-leaderboard" class="section">
+      <div class="card">
+        <div class="card-header"><div class="card-title">🏆 LEADERBOARD</div></div>
+        <div id="leaderboardContent"></div>
+      </div>
+    </div>
+
+    <!-- CERTIFICATES -->
+    <div id="sec-certificates" class="section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📜 CERTIFICATE MANAGEMENT</div>
+          <div class="card-actions">
+            <button class="btn btn-gold btn-sm" onclick="generateAllCertificates()">⬇ GENERATE ALL</button>
+          </div>
+        </div>
+        <div id="certsContent"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="sec-settings" class="section">
+      <div class="card">
+        <div class="card-header"><div class="card-title">⚙️ SYSTEM SETTINGS</div></div>
+        <div class="form-group"><label>EXAM PROGRAMME NAME</label><input type="text" id="settingProgramme" value="Annual Oral Examination 2026" oninput="saveSettings()"></div>
+        <div class="form-group"><label>START DATE</label><input type="text" id="settingStartDate" value="25 April 2026" oninput="saveSettings()"></div>
+        <div class="form-group"><label>END DATE</label><input type="text" id="settingEndDate" value="21 May 2026" oninput="saveSettings()"></div>
+        <div class="form-group"><label>ACADEMIC YEAR</label><input type="text" id="settingYear" value="2025-2026" oninput="saveSettings()"></div>
+        <div class="form-group"><label>PRINCIPAL NAME</label><input type="text" id="settingPrincipal" value="Principal" oninput="saveSettings()"></div>
+        <div class="form-group"><label>AUTHORIZING TITLE</label><input type="text" id="settingAuth" value="Head of Examination" oninput="saveSettings()"></div>
+        <div class="gold-divider"></div>
+        <!-- Firebase Config Section -->
+        <div class="card-title" style="margin-bottom:12px;font-size:0.85rem;">🔥 FIREBASE SYNC CONFIG</div>
+        <div class="config-area" style="margin-bottom:16px;">
+          <p style="margin-bottom:8px;color:var(--cream3);">To enable cross-device sync, enter your Firebase credentials below and click <strong style="color:var(--gold2);">APPLY & RECONNECT</strong>.</p>
+          <p style="margin-bottom:4px;font-size:0.78rem;">Get these from <code>console.firebase.google.com</code> → Project Settings → Your Apps → Web App</p>
+        </div>
+        <div class="form-group"><label>FIREBASE API KEY</label><input type="text" id="fbApiKey" placeholder="AIza..."></div>
+        <div class="form-group"><label>DATABASE URL</label><input type="text" id="fbDbUrl" placeholder="https://your-project-default-rtdb.firebaseio.com"></div>
+        <div class="form-group"><label>PROJECT ID</label><input type="text" id="fbProjectId" placeholder="your-project-id"></div>
+        <div class="form-group"><label>APP ID</label><input type="text" id="fbAppId" placeholder="1:123456:web:abc123"></div>
+        <button class="btn btn-gold btn-sm" onclick="applyFirebaseConfig()" style="margin-bottom:20px;">🔥 APPLY &amp; RECONNECT</button>
+        <div class="gold-divider"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-navy btn-sm" onclick="exportAllData()">⬇ EXPORT BACKUP</button>
+          <button class="btn btn-navy btn-sm" onclick="document.getElementById('importFile').click()">⬆ IMPORT BACKUP</button>
+          <button class="btn btn-red btn-sm" onclick="clearAllData()">🗑 CLEAR ALL DATA</button>
+        </div>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== MODALS ===================== -->
+
+<div id="studentModal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title" id="studentModalTitle">ADD STUDENT</div>
+    <input type="hidden" id="editStudentId">
+    <div class="form-group"><label>STUDENT NAME *</label><input type="text" id="sName" placeholder="Full name"></div>
+    <div class="form-group"><label>FATHER'S NAME *</label><input type="text" id="sFather" placeholder="Father's name"></div>
+    <div class="form-group"><label>RELATION</label>
+      <select id="sRelation">
+        <option value="D/O">D/O (Daughter of)</option>
+        <option value="W/O">W/O (Wife of)</option>
+        <option value="S/O">S/O (Son of)</option>
+      </select>
+    </div>
+    <div class="form-group"><label>GROUP</label>
+      <select id="sGroup">
+        <option value="Group A">Group A</option>
+        <option value="Group B">Group B</option>
+        <option value="Group C">Group C</option>
+      </select>
+    </div>
+    <div class="form-group"><label>ROLL NUMBER (optional)</label><input type="text" id="sRoll" placeholder="e.g. 001"></div>
+    <div class="modal-footer">
+      <button class="btn btn-navy btn-sm" onclick="closeModal('studentModal')">CANCEL</button>
+      <button class="btn btn-gold btn-sm" onclick="saveStudent()">SAVE STUDENT</button>
+    </div>
+  </div>
+</div>
+
+<div id="quickAddStudentModal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">QUICK ADD STUDENT</div>
+    <div class="form-group"><label>STUDENT NAME *</label><input type="text" id="qsName"></div>
+    <div class="form-group"><label>FATHER'S NAME *</label><input type="text" id="qsFather"></div>
+    <div class="form-group"><label>RELATION</label>
+      <select id="qsRelation">
+        <option value="D/O">D/O</option><option value="W/O">W/O</option><option value="S/O">S/O</option>
+      </select>
+    </div>
+    <div class="form-group"><label>GROUP</label>
+      <select id="qsGroup">
+        <option value="Group A">Group A</option>
+        <option value="Group B">Group B</option>
+        <option value="Group C">Group C</option>
+      </select>
+    </div>
+    <div class="form-group"><label>ROLL NUMBER</label><input type="text" id="qsRoll"></div>
+    <div class="modal-footer">
+      <button class="btn btn-navy btn-sm" onclick="closeModal('quickAddStudentModal')">CANCEL</button>
+      <button class="btn btn-gold btn-sm" onclick="quickAddStudent()">ADD &amp; SELECT</button>
+    </div>
+  </div>
+</div>
+
+<!-- Certificate Preview Modal -->
+<div id="certPreviewModal" class="modal-overlay">
+  <div class="modal" style="max-width:1060px;">
+    <div class="modal-title">CERTIFICATE PREVIEW</div>
+    <div style="overflow-x:auto;overflow-y:auto;max-height:75vh;">
+      <div id="certPreviewArea" style="transform-origin:top left;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-navy btn-sm" onclick="closeModal('certPreviewModal')">CLOSE</button>
+      <button class="btn btn-gold btn-sm" onclick="downloadPreviewCert()">⬇ DOWNLOAD PDF</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<!-- ===================== SCRIPT ===================== -->
+<script>
+// ===================== APP STATE =====================
+const APP = {
+  role:'admin', user:'admin',
+  pendingCertStudent:null,
+  isOnline:navigator.onLine,
+};
+
+// ===================== FIREBASE CONFIG =====================
+// 🔧 REPLACE the values below with your own Firebase project credentials
+// Get them from: https://console.firebase.google.com → Project Settings → Your Apps → Web App
+const FIREBASE_CONFIG = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+let db = null;
+let DB_ROOT = 'maktab_fatimah'; // All data lives under this key in Firebase
+
+function initFirebase(){
+  try {
+    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    console.log('Firebase initialized');
+  } catch(e) {
+    console.warn('Firebase init failed, falling back to localStorage:', e);
+    db = null;
+  }
+}
+
+// ===================== IN-MEMORY CACHE (mirrors Firebase) =====================
+const CACHE = {
+  students: [],
+  marks: [],
+  certificates: {},
+  settings: null,
+};
+
+// ===================== LEGACY localStorage HELPERS (fallback only) =====================
+const LS = {
+  get(k,def=[]){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def;}catch(e){return def;}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){console.warn('LS set failed',e);}},
+  getObj(k,def={}){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def;}catch(e){return def;}},
+};
+
+const KEY = {
+  students:'mf_students', marks:'mf_marks',
+  certificates:'mf_certs_map', settings:'mf_settings',
+};
+
+// ===================== FIREBASE DATA LAYER =====================
+// All reads come from CACHE (instantly) — Firebase listeners keep CACHE updated live
+// All writes go to Firebase (and update CACHE)
+
+const DB = {
+  // Read from cache
+  getStudents(){ return CACHE.students || []; },
+  getMarks(){ return CACHE.marks || []; },
+  getCerts(){ return CACHE.certificates || {}; },
+  getSettings(){ return CACHE.settings || getDefaultSettings(); },
+
+  // Write to Firebase (or localStorage fallback)
+  async setStudents(arr){
+    CACHE.students = arr;
+    if(db){
+      // Store as object keyed by id for efficient Firebase storage
+      const obj = {};
+      arr.forEach(s=>{ if(s&&s.id) obj[s.id]=s; });
+      await db.ref(DB_ROOT+'/students').set(obj).catch(e=>console.warn('FB write err',e));
+    } else {
+      LS.set(KEY.students, arr);
+    }
+  },
+  async setMarks(arr){
+    CACHE.marks = arr;
+    if(db){
+      const obj = {};
+      arr.forEach(m=>{ if(m&&m.id) obj[m.id]=m; });
+      await db.ref(DB_ROOT+'/marks').set(obj).catch(e=>console.warn('FB write err',e));
+    } else {
+      LS.set(KEY.marks, arr);
+    }
+  },
+  async setCerts(certMap){
+    CACHE.certificates = certMap;
+    if(db){
+      await db.ref(DB_ROOT+'/certificates').set(certMap).catch(e=>console.warn('FB write err',e));
+    } else {
+      LS.set(KEY.certificates, certMap);
+    }
+  },
+  async setSettings(s){
+    CACHE.settings = s;
+    if(db){
+      await db.ref(DB_ROOT+'/settings').set(s).catch(e=>console.warn('FB write err',e));
+    } else {
+      LS.set(KEY.settings, s);
+    }
+  },
+};
+
+function getDefaultSettings(){
+  return {
+    programme:'Annual Oral Examination 2026',
+    startDate:'25 April 2026',
+    endDate:'21 May 2026',
+    year:'2025-2026',
+    principal:'Principal',
+    auth:'Head of Examination',
+  };
+}
+
+// ===================== REAL-TIME LISTENERS =====================
+function attachFirebaseListeners(){
+  if(!db) return;
+
+  db.ref(DB_ROOT+'/students').on('value', snap=>{
+    const val = snap.val();
+    CACHE.students = val ? Object.values(val) : [];
+    // Refresh whichever section is currently visible
+    if(document.getElementById('studentsTableBody')) renderStudentsTable();
+    renderDashboard();
+  });
+
+  db.ref(DB_ROOT+'/marks').on('value', snap=>{
+    const val = snap.val();
+    CACHE.marks = val ? Object.values(val) : [];
+    if(document.getElementById('sec-marks')?.classList.contains('active')) renderMarksTable();
+    if(document.getElementById('sec-leaderboard')?.classList.contains('active')) renderLeaderboard();
+    renderDashboard();
+  });
+
+  db.ref(DB_ROOT+'/certificates').on('value', snap=>{
+    CACHE.certificates = snap.val() || {};
+    if(document.getElementById('sec-certificates')?.classList.contains('active')) renderCertsTable();
+  });
+
+  db.ref(DB_ROOT+'/settings').on('value', snap=>{
+    const val = snap.val();
+    if(val){
+      CACHE.settings = val;
+      // Update settings variable used by cert generation
+      Object.assign(settings, val);
+    }
+  });
+}
+
+// ===================== INITIAL DATA LOAD FROM FIREBASE =====================
+async function loadAllFromFirebase(){
+  if(!db){
+    // Fallback: load from localStorage into cache
+    CACHE.students = LS.get(KEY.students, []);
+    CACHE.marks = LS.get(KEY.marks, []);
+    CACHE.certificates = LS.getObj(KEY.certificates, {});
+    CACHE.settings = LS.getObj(KEY.settings, getDefaultSettings());
+    return;
+  }
+  updateSyncBadge('syncing');
+  try {
+    const [stuSnap, mrkSnap, cerSnap, setSnap] = await Promise.all([
+      db.ref(DB_ROOT+'/students').once('value'),
+      db.ref(DB_ROOT+'/marks').once('value'),
+      db.ref(DB_ROOT+'/certificates').once('value'),
+      db.ref(DB_ROOT+'/settings').once('value'),
+    ]);
+    const stuVal = stuSnap.val(); CACHE.students = stuVal ? Object.values(stuVal) : [];
+    const mrkVal = mrkSnap.val(); CACHE.marks = mrkVal ? Object.values(mrkVal) : [];
+    CACHE.certificates = cerSnap.val() || {};
+    const setVal = setSnap.val(); CACHE.settings = setVal || getDefaultSettings();
+    if(setVal) Object.assign(settings, setVal);
+    updateSyncBadge('online');
+  } catch(e) {
+    console.warn('Firebase load failed, using localStorage fallback:', e);
+    CACHE.students = LS.get(KEY.students, []);
+    CACHE.marks = LS.get(KEY.marks, []);
+    CACHE.certificates = LS.getObj(KEY.certificates, {});
+    CACHE.settings = LS.getObj(KEY.settings, getDefaultSettings());
+    updateSyncBadge('offline');
+  }
+}
+
+// ===================== GROUP SUBJECTS DEFINITION =====================
+const GROUP_SUBJECTS = {
+  'Group A':[
+    {id:'gA1',name:'Noorani Qaida',maxMarks:10},
+    {id:'gA2',name:'Hifz Surah',maxMarks:10},
+    {id:'gA3',name:'Hifz-e-Hadees',maxMarks:10},
+    {id:'gA4',name:'Masnoon Duayen',maxMarks:10},
+    {id:'gA5',name:'Aqaidh',maxMarks:10},
+    {id:'gA6',name:'Seerat-un-Nabi',maxMarks:10},
+    {id:'gA7',name:'Adab-e-Zindagi',maxMarks:10},
+    {id:'gA8',name:'Akhlaqiyaat',maxMarks:10},
+    {id:'gA9',name:'Azkaar-e-Namaz',maxMarks:10},
+    {id:'gA10',name:'Masail',maxMarks:10},
+  ],
+  'Group B':[
+    {id:'gB1',name:'Noorani Qaida',maxMarks:10},
+    {id:'gB2',name:'Hifz Surah',maxMarks:10},
+    {id:'gB3',name:'Masnoon Duayen',maxMarks:10},
+    {id:'gB4',name:'Hifz-e-Hadees',maxMarks:10},
+    {id:'gB5',name:'Aqaidh',maxMarks:10},
+    {id:'gB6',name:'Seerat-un-Nabi',maxMarks:10},
+    {id:'gB7',name:'Fiqh (Masail)',maxMarks:10},
+    {id:'gB8',name:'Islami Maloomat',maxMarks:10},
+  ],
+  'Group C':[
+    {id:'gC1',name:'Noorani Qaida',maxMarks:10},
+    {id:'gC2',name:'Hifz Surah',maxMarks:10},
+    {id:'gC3',name:'Masnoon Duayen',maxMarks:10},
+    {id:'gC4',name:'Hifz-e-Hadees',maxMarks:10},
+    {id:'gC5',name:'Aqaidh',maxMarks:10},
+    {id:'gC6',name:'Seerat-un-Nabi',maxMarks:10},
+    {id:'gC7',name:'Fiqh (Masail)',maxMarks:10},
+    {id:'gC8',name:'Islami Tarbiyat',maxMarks:10},
+  ],
+};
+
+function getSubjectsForGroup(group){
+  return GROUP_SUBJECTS[group]||GROUP_SUBJECTS['Group A'];
+}
+
+// ===================== SETTINGS =====================
+let settings = getDefaultSettings(); // will be overwritten by Firebase on load
+function saveSettings(){
+  settings.programme = document.getElementById('settingProgramme')?.value||settings.programme;
+  settings.startDate = document.getElementById('settingStartDate')?.value||settings.startDate;
+  settings.endDate = document.getElementById('settingEndDate')?.value||settings.endDate;
+  settings.year = document.getElementById('settingYear')?.value||settings.year;
+  settings.principal = document.getElementById('settingPrincipal')?.value||settings.principal;
+  settings.auth = document.getElementById('settingAuth')?.value||settings.auth;
+  await DB.setSettings(settings);
+}
+function loadSettings(){
+  if(document.getElementById('settingProgramme')) document.getElementById('settingProgramme').value=settings.programme;
+  if(document.getElementById('settingStartDate')) document.getElementById('settingStartDate').value=settings.startDate;
+  if(document.getElementById('settingEndDate')) document.getElementById('settingEndDate').value=settings.endDate;
+  if(document.getElementById('settingYear')) document.getElementById('settingYear').value=settings.year;
+  if(document.getElementById('settingPrincipal')) document.getElementById('settingPrincipal').value=settings.principal;
+  if(document.getElementById('settingAuth')) document.getElementById('settingAuth').value=settings.auth;
+}
+
+// ===================== SYNC BADGE =====================
+function updateSyncBadge(state){
+  const b=document.getElementById('syncBadge');
+  const t=document.getElementById('syncText');
+  if(!b||!t) return;
+  b.className='sync-badge '+state;
+  const dot=b.querySelector('.sync-dot');
+  if(state==='online'){t.textContent='SYNCED';dot.classList.remove('pulse');}
+  else if(state==='syncing'){t.textContent='SYNCING';dot.classList.add('pulse');}
+  else{t.textContent='OFFLINE';dot.classList.remove('pulse');}
+}
+window.addEventListener('online',()=>{ APP.isOnline=true; updateSyncBadge('online'); if(db) attachFirebaseListeners(); });
+window.addEventListener('offline',()=>{ APP.isOnline=false; updateSyncBadge('offline'); });
+
+// ===================== AUTH =====================
+const USERS={admin:{pass:'admin',role:'admin'},examiner:{pass:'exam123',role:'examiner'}};
+let selectedRole='admin';
+function selectRole(el){
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  selectedRole=el.dataset.role;
+}
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value;
+  if((u==='admin'&&p==='admin')||(USERS[u]&&USERS[u].pass===p)){
+    APP.role=USERS[u]?USERS[u].role:selectedRole;
+    APP.user=u;
+    // Show main page immediately — no waiting for Firebase
+    document.getElementById('loginPage').classList.remove('active');
+    document.getElementById('mainPage').classList.add('active');
+    document.getElementById('currentUserChip').textContent=u.charAt(0).toUpperCase()+u.slice(1);
+    applyRoleRestrictions();
+    // Load data async in background
+    initApp().catch(e=>{ console.warn('initApp error:',e); renderDashboard(); });
+  } else { toast('Invalid credentials','error'); }
+}
+function doLogout(){
+  if(!confirm('Logout?')) return;
+  document.getElementById('mainPage').classList.remove('active');
+  document.getElementById('loginPage').classList.add('active');
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+}
+function applyRoleRestrictions(){
+  if(APP.role==='examiner'){
+    document.getElementById('tabSubjects').style.display='none';
+    document.getElementById('tabCerts').style.display='none';
+    document.getElementById('tabSettings').style.display='none';
+    document.getElementById('addStudentBtn').style.display='none';
+  }
+}
+
+// ===================== HELPERS =====================
+function genId(){ return Date.now()+'_'+Math.random().toString(36).substr(2,7); }
+function genCertId(){
+  const certMap=DB.getCerts();
+  const yr=new Date().getFullYear();
+  const count=Object.keys(certMap).length;
+  return 'CERT-'+yr+'-'+(1001+count);
+}
+function getGrade(pct){
+  if(pct>=75) return 'A';
+  if(pct>=55) return 'B';
+  if(pct>=35) return 'C';
+  return 'F';
+}
+function gradeClass(g){ return 'grade-'+g; }
+function groupClass(g){
+  if(g==='Group A') return 'group-A';
+  if(g==='Group B') return 'group-B';
+  return 'group-C';
+}
+
+// ===================== TAB SWITCHING =====================
+function switchTab(el){
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const tab=el.dataset.tab;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+tab).classList.add('active');
+  if(tab==='dashboard') renderDashboard();
+  if(tab==='students') renderStudentsTable();
+  if(tab==='subjects') renderSubjectsGrid();
+  if(tab==='marks') renderMarksTable();
+  if(tab==='leaderboard') renderLeaderboard();
+  if(tab==='certificates') renderCertsTable();
+  if(tab==='settings'){ loadSettings(); loadFirebaseConfigToForm(); }
+}
+
+// ===================== MODAL =====================
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.addEventListener('click',e=>{ if(e.target.classList.contains('modal-overlay')) e.target.classList.remove('open'); });
+
+// ===================== TOAST =====================
+function toast(msg,type='info',dur=3500){
+  const c=document.getElementById('toastContainer');
+  const t=document.createElement('div');
+  t.className='toast '+type; t.textContent=msg;
+  c.appendChild(t);
+  setTimeout(()=>t.remove(),dur);
+}
+
+// ===================== PRELOAD STUDENTS FROM XLSX DATA =====================
+async function preloadStudents(){
+  const existing=DB.getStudents();
+  if(existing.length) return; // already loaded
+
+  const rawData = {
+    'Group A':[
+      {name:'Sumera Begum',father:'Sheikh Umar'},
+      {name:'Sumera Begum',father:'Unknown'},
+      {name:'Saba Nazim',father:'Usman Khan'},
+      {name:'Amina Ashraf',father:'Mohd Anwar'},
+      {name:'Mahira',father:'Mohd Salam Hasan'},
+      {name:'Lubna',father:'Unknown'},
+      {name:'Safeena Tasneem',father:'Sheikh Abdul Raheem'},
+      {name:'Ansha',father:'Unknown'},
+      {name:'Hiba',father:'Mohd Javed Khan'},
+      {name:'Mahira Afreen',father:'Mohd Ismail'},
+      {name:'Sheikh Muzain',father:'Sheikh Taher'},
+      {name:'Kulsum',father:'Bin Sheikh Umar'},
+      {name:'Alveera',father:'Bin Mohammed Abdul Rahman'},
+      {name:'Sabil',father:'Bin Sheikh Ilyas'},
+      {name:'Anas',father:'Bin Mohd Ashraf'},
+      {name:'Mohd Abdul Ahad',father:'Bin Syed Abdul Qudoos'},
+      {name:'Fairoz',father:'Bin Javed Khan'},
+      {name:'Lubna Zaid',father:'Bin Sheikh Saleem'},
+      {name:'Mohd Mehdi',father:'Bin Mohd Saeed'},
+      {name:'Mohd Ibrahim',father:'Unknown'},
+      {name:'Saba Arjeen',father:'Bint Sheikh Ahmed'},
+      {name:'Hafsa',father:'Unknown'},
+      {name:'Mohd Anas',father:'Bin Mohd Akram'},
+      {name:'Syed Arhaan',father:'Bin Yaqoob Khan'},
+    ],
+    'Group B':[
+      {name:'Mohd Tanveeruddin',father:'Ghouseuddin'},
+      {name:'Aarish Faraad',father:'Mohd Asif'},
+      {name:'Inaan Ali',father:'Unknown'},
+      {name:'Abdul Basit',father:'Mohd Yousuf'},
+      {name:'Sidra Yousuf',father:'Sheikh Naseeb'},
+      {name:'Lubna Tanzeel',father:'Mohd Abdul Hafeez'},
+      {name:'Bushra Firdaus',father:'Sheikh Abdul Rahim'},
+      {name:'Mehera',father:'Sheikh Jani'},
+      {name:'Saba',father:'Sheikh Jani'},
+      {name:'Eman Fatima',father:'Sheikh Sirajuddin'},
+      {name:'Sumera Taher',father:'Sheikh Ibrahim'},
+      {name:'Sana Ameen',father:'Mohd Arif'},
+      {name:'Mohd Ibrahim Hussain',father:'Mohd Abdul Raheem'},
+      {name:'Mohd Abu Bakr Burhan',father:'Bin Asif'},
+      {name:'Mohd Abdullah',father:'Bin Syed Abdul Qudoos'},
+      {name:'Arsh Khan',father:'Bin Mansoor Khan'},
+    ],
+    'Group C':[
+      {name:'Khadija',father:'Khader Sharif'},
+      {name:'Huma',father:'Sheikh Ghouse Ali'},
+      {name:'Ansha',father:'Unknown'},
+      {name:'Amina',father:'Sheikh Habib'},
+      {name:'Muntaha Taher',father:'Mohd Ayub'},
+      {name:'Alina Firdaus',father:'Akram'},
+      {name:'Sakan',father:'Mohd Jani'},
+      {name:'Talha',father:'Mohd Sirajuddin'},
+      {name:'Mehera',father:'Mohd Jani'},
+      {name:'Areeba Khan',father:'Mohd Usman'},
+      {name:'Mubeen Khan',father:'Mohd Arif Khan'},
+      {name:'Zubaira Ashraf',father:'Abdul Ahad'},
+      {name:'Ayesha',father:'Abdul Rahman'},
+      {name:'Juwairiya',father:'Mohd Javed'},
+      {name:'Sumair Rizwan',father:'Mohd Rizwan'},
+      {name:'Saadiya',father:'Hafiz Abdul Rahim'},
+      {name:'Urwa Muskan',father:'Sheikh Abdul Latif'},
+      {name:'Hafsa',father:'Unknown'},
+      {name:'Uzma',father:'Unknown'},
+      {name:'Lubna',father:'Mohd Ali'},
+    ],
+  };
+
+  const students=[];
+  let rollCounter=1;
+  Object.entries(rawData).forEach(([group,list])=>{
+    list.forEach(item=>{
+      students.push({
+        id:genId(),
+        name:item.name,
+        father:item.father==='Unknown'?'':item.father,
+        relation:'D/O',
+        group,
+        roll:String(rollCounter++).padStart(3,'0'),
+        createdAt:Date.now(),
+      });
+    });
+  });
+  await DB.setStudents(students);
+  toast('60 students preloaded successfully ✓','success');
+}
+
+// ===================== STUDENTS =====================
+async function saveStudent(){
+  const id=document.getElementById('editStudentId').value;
+  const name=document.getElementById('sName').value.trim();
+  const father=document.getElementById('sFather').value.trim();
+  if(!name){ toast('Student name required','error'); return; }
+  const students=DB.getStudents();
+  const student={
+    id:id||genId(), name, father,
+    relation:document.getElementById('sRelation').value,
+    group:document.getElementById('sGroup').value,
+    roll:document.getElementById('sRoll').value.trim(),
+    createdAt:id?undefined:Date.now(),
+  };
+  if(id){ const i=students.findIndex(s=>s.id===id); if(i>-1) students[i]=student; else students.push(student); }
+  else { students.push(student); }
+  await DB.setStudents(students);
+  closeModal('studentModal');
+  toast(id?'Student updated ✓':'Student added ✓','success');
+  renderStudentsTable(); renderDashboard();
+  clearStudentForm();
+}
+function clearStudentForm(){
+  ['editStudentId','sName','sFather','sRoll'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('sRelation').value='D/O';
+  document.getElementById('sGroup').value='Group A';
+  document.getElementById('studentModalTitle').textContent='ADD STUDENT';
+}
+function editStudent(id){
+  const students=DB.getStudents();
+  const s=students.find(x=>x.id===id); if(!s) return;
+  document.getElementById('editStudentId').value=s.id;
+  document.getElementById('sName').value=s.name;
+  document.getElementById('sFather').value=s.father||'';
+  document.getElementById('sRelation').value=s.relation||'D/O';
+  document.getElementById('sGroup').value=s.group||'Group A';
+  document.getElementById('sRoll').value=s.roll||'';
+  document.getElementById('studentModalTitle').textContent='EDIT STUDENT';
+  openModal('studentModal');
+}
+async function deleteStudent(id){
+  if(!confirm('Delete this student? All marks will also be deleted.')) return;
+  let students=DB.getStudents();
+  students=students.filter(s=>s.id!==id);
+  await DB.setStudents(students);
+  let marks=DB.getMarks();
+  marks=marks.filter(m=>m.studentId!==id);
+  await DB.setMarks(marks);
+  toast('Student deleted','info');
+  renderStudentsTable(); renderDashboard();
+}
+function renderStudentsTable(){
+  const q=(document.getElementById('studentSearch')?.value||'').toLowerCase();
+  const students=DB.getStudents();
+  const marks=DB.getMarks();
+  const body=document.getElementById('studentsTableBody');
+  if(!body) return;
+  const filtered=students.filter(s=>!q||s.name.toLowerCase().includes(q)||(s.father||'').toLowerCase().includes(q)||(s.group||'').toLowerCase().includes(q));
+  body.innerHTML=filtered.map((s,i)=>{
+    const grp=s.group||'Group A';
+    const subs=getSubjectsForGroup(grp);
+    const maxTotal=subs.reduce((a,x)=>a+x.maxMarks,0);
+    const sm=marks.filter(m=>m.studentId===s.id);
+    const total=sm.reduce((a,m)=>a+(+m.marks||0),0);
+    const pct=maxTotal?Math.round(total/maxTotal*100):0;
+    const grade=sm.length?getGrade(pct):'—';
+    const gradeHtml=sm.length?`<span class="grade-badge ${gradeClass(grade)}">${grade}</span>`:'<span style="color:var(--text3)">—</span>';
+    const adminBtns=APP.role==='admin'?`<button class="btn btn-navy btn-sm" onclick="editStudent('${s.id}')">✏️</button><button class="btn btn-red btn-sm" onclick="deleteStudent('${s.id}')">🗑</button>`:'';
+    return `<tr>
+      <td style="color:var(--text3)">${i+1}</td>
+      <td><strong style="color:var(--cream)">${s.name}</strong></td>
+      <td style="color:var(--text3)">${s.father||'—'}</td>
+      <td><span class="group-badge ${groupClass(grp)}">${grp}</span></td>
+      <td style="color:var(--text3)">${s.roll||'—'}</td>
+      <td style="font-family:var(--font-heading);color:var(--cream)">${sm.length?total+'/'+maxTotal:'—'}</td>
+      <td>${gradeHtml}</td>
+      <td><div class="action-btns">${adminBtns}<button class="btn btn-green btn-sm" onclick="goToExam('${s.id}')">✍️ MARK</button></div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ===================== SUBJECTS GRID =====================
+function renderSubjectsGrid(){
+  const grid=document.getElementById('subjectsGrid');
+  if(!grid) return;
+  grid.innerHTML=Object.entries(GROUP_SUBJECTS).map(([group,subs])=>`
+    <div class="subject-mark-card" style="margin-bottom:16px;">
+      <h4 style="margin-bottom:12px;">
+        <span class="group-badge ${groupClass(group)}" style="font-size:0.9rem;padding:4px 14px;">${group}</span>
+        <span style="font-size:0.75rem;color:var(--text3);">${subs.length} subjects · Max: ${subs.reduce((a,s)=>a+s.maxMarks,0)} marks</span>
+      </h4>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        ${subs.map(s=>`<span class="question-tag">📖 ${s.name} <span style="color:var(--gold2);font-size:0.7rem;">(${s.maxMarks})</span></span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===================== ORAL EXAM =====================
+let examStudentId=null;
+let liveMarks={};
+function examSearch(){
+  const q=(document.getElementById('examStudentSearch')?.value||'').toLowerCase();
+  const res=document.getElementById('examSearchResults');
+  if(!q||q.length<1){res.style.display='none';return;}
+  const students=DB.getStudents();
+  const matches=students.filter(s=>s.name.toLowerCase().includes(q)||(s.father||'').toLowerCase().includes(q)||(s.roll||'').includes(q));
+  if(!matches.length){res.style.display='none';return;}
+  res.style.display='block';
+  res.innerHTML=matches.slice(0,10).map(s=>`
+    <div class="search-item" onclick="selectExamStudent('${s.id}')">
+      <strong>${s.name}</strong> &nbsp;<span style="opacity:0.6">${s.relation||'D/O'} ${s.father||''}</span>
+      <span style="float:right;font-size:0.75rem;opacity:0.5;"><span class="group-badge ${groupClass(s.group||'Group A')}" style="font-size:0.7rem;">${s.group||'Group A'}</span> ${s.roll?'· Roll: '+s.roll:''}</span>
+    </div>
+  `).join('');
+}
+function goToExam(studentId){
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('[data-tab="examiner"]').classList.add('active');
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-examiner').classList.add('active');
+  selectExamStudent(studentId);
+}
+function selectExamStudent(id){
+  const students=DB.getStudents();
+  const s=students.find(x=>x.id===id); if(!s) return;
+  examStudentId=id;
+  const res=document.getElementById('examSearchResults');
+  if(res) res.style.display='none';
+  const inp=document.getElementById('examStudentSearch');
+  if(inp) inp.value=s.name;
+  const marks=DB.getMarks();
+  liveMarks={};
+  marks.filter(m=>m.studentId===id).forEach(m=>{ liveMarks[m.subjectId]=m.marks; });
+  renderExamPanel(s);
+}
+function renderExamPanel(s){
+  const grp=s.group||'Group A';
+  const subs=getSubjectsForGroup(grp);
+  const panel=document.getElementById('examPanel');
+  if(!panel) return;
+  panel.innerHTML=`
+    <div class="exam-student-info">
+      <h3>✍️ Entering Marks For:</h3>
+      <div class="info-grid">
+        <div class="info-item"><strong>STUDENT</strong>${s.name}</div>
+        <div class="info-item"><strong>RELATION</strong>${s.relation||'D/O'} ${s.father||''}</div>
+        <div class="info-item"><strong>GROUP</strong><span class="group-badge ${groupClass(grp)}">${grp}</span></div>
+        <div class="info-item"><strong>ROLL</strong>${s.roll||'—'}</div>
+      </div>
+    </div>
+    <div class="subject-marks-grid">
+      ${subs.map(sub=>{
+        const cur=liveMarks[sub.id]||'';
+        return `
+        <div class="subject-mark-card">
+          <h4>
+            📖 ${sub.name}
+            <span class="grade-badge" id="gb_${sub.id}">—</span>
+          </h4>
+          <div class="mark-input-row">
+            <label>MARKS (0–${sub.maxMarks})</label>
+            <input type="number" class="mark-input" id="mi_${sub.id}" value="${cur}" min="0" max="${sub.maxMarks}" oninput="onMarkInput('${sub.id}',${sub.maxMarks})" placeholder="0">
+            <span style="color:var(--text3);font-size:0.85rem;">/ ${sub.maxMarks}</span>
+            <div class="progress-bar" style="flex:1;min-width:80px;"><div class="progress-fill" id="pf_${sub.id}" style="width:${cur?Math.round(cur/sub.maxMarks*100):0}%"></div></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
+      <button class="btn btn-gold" onclick="submitAllMarks()">✓ SUBMIT ALL MARKS</button>
+      <button class="btn btn-navy" onclick="clearExamPanel()">✕ CLEAR</button>
+    </div>
+    <div id="examSummary" style="margin-top:20px;"></div>
+  `;
+  subs.forEach(sub=>{ if(liveMarks[sub.id]!==undefined) updateGradeBadge(sub.id,sub.maxMarks); });
+}
+function onMarkInput(subId,maxMarks){
+  const val=parseFloat(document.getElementById('mi_'+subId)?.value||0);
+  liveMarks[subId]=val;
+  const pct=maxMarks?Math.round(val/maxMarks*100):0;
+  const pf=document.getElementById('pf_'+subId);
+  if(pf) pf.style.width=Math.min(pct,100)+'%';
+  updateGradeBadge(subId,maxMarks);
+}
+function updateGradeBadge(subId,maxMarks){
+  const val=parseFloat(document.getElementById('mi_'+subId)?.value||0);
+  const pct=maxMarks?Math.round(val/maxMarks*100):0;
+  const g=getGrade(pct);
+  const el=document.getElementById('gb_'+subId);
+  if(el){el.textContent=g;el.className='grade-badge '+gradeClass(g);}
+}
+async function submitAllMarks(){
+  if(!examStudentId){toast('No student selected','error');return;}
+  const students=DB.getStudents();
+  const s=students.find(x=>x.id===examStudentId);
+  const grp=s?s.group||'Group A':'Group A';
+  const subs=getSubjectsForGroup(grp);
+  const marks=DB.getMarks();
+  const now=Date.now();
+  subs.forEach(sub=>{
+    const v=parseFloat(document.getElementById('mi_'+sub.id)?.value||0);
+    const existing=marks.findIndex(m=>m.studentId===examStudentId&&m.subjectId===sub.id);
+    const record={id:examStudentId+'_'+sub.id,studentId:examStudentId,subjectId:sub.id,subjectName:sub.name,marks:v,maxMarks:sub.maxMarks,updatedAt:now};
+    if(existing>-1) marks[existing]=record; else marks.push(record);
+  });
+  await DB.setMarks(marks);
+  toast('Marks saved successfully ✓','success');
+  renderExamSummary(grp);
+}
+function renderExamSummary(grp){
+  const subs=getSubjectsForGroup(grp||'Group A');
+  const total=subs.reduce((a,s)=>a+(+liveMarks[s.id]||0),0);
+  const maxT=subs.reduce((a,s)=>a+s.maxMarks,0);
+  const pct=maxT?Math.round(total/maxT*100):0;
+  const g=getGrade(pct);
+  document.getElementById('examSummary').innerHTML=`
+    <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:var(--radius);padding:16px;display:flex;gap:20px;flex-wrap:wrap;">
+      <div class="stat-card" style="min-width:120px;flex:1;">
+        <div class="stat-val">${total}/${maxT}</div><div class="stat-lbl">TOTAL MARKS</div>
+      </div>
+      <div class="stat-card" style="min-width:120px;flex:1;">
+        <div class="stat-val">${pct}%</div><div class="stat-lbl">PERCENTAGE</div>
+      </div>
+      <div class="stat-card" style="min-width:120px;flex:1;">
+        <div class="stat-val"><span class="grade-badge ${gradeClass(g)}" style="width:40px;height:40px;font-size:1.1rem;">${g}</span></div>
+        <div class="stat-lbl" style="margin-top:8px;">FINAL GRADE</div>
+      </div>
+    </div>
+  `;
+}
+function clearExamPanel(){
+  examStudentId=null; liveMarks={};
+  document.getElementById('examPanel').innerHTML='';
+  document.getElementById('examStudentSearch').value='';
+}
+async function quickAddStudent(){
+  const name=document.getElementById('qsName').value.trim();
+  const father=document.getElementById('qsFather').value.trim();
+  if(!name){toast('Name required','error');return;}
+  const students=DB.getStudents();
+  const student={id:genId(),name,father,relation:document.getElementById('qsRelation').value,group:document.getElementById('qsGroup').value,roll:document.getElementById('qsRoll').value.trim(),createdAt:Date.now()};
+  students.push(student);
+  await DB.setStudents(students);
+  closeModal('quickAddStudentModal');
+  toast('Student added ✓','success');
+  selectExamStudent(student.id);
+  document.getElementById('qsName').value='';document.getElementById('qsFather').value='';document.getElementById('qsRoll').value='';
+}
+
+// ===================== RANKED STUDENTS =====================
+function getRankedStudents(){
+  const students=DB.getStudents();
+  const marks=DB.getMarks();
+  const rows=students.map(s=>{
+    const grp=s.group||'Group A';
+    const subs=getSubjectsForGroup(grp);
+    const maxTotal=subs.reduce((a,x)=>a+x.maxMarks,0);
+    const sm=marks.filter(m=>m.studentId===s.id);
+    const total=sm.reduce((a,m)=>a+(+m.marks||0),0);
+    const pct=maxTotal?Math.round(total/maxTotal*100):0;
+    return {s,total,pct,grade:getGrade(pct),hasMarks:sm.length>0,maxTotal,sm};
+  });
+  rows.sort((a,b)=>b.total-a.total);
+  rows.forEach((r,i)=>r.rank=i+1);
+  return rows;
+}
+
+// ===================== MARKS TABLE =====================
+function renderMarksTable(){
+  const rows=getRankedStudents();
+  const el=document.getElementById('marksContent');
+  if(!el) return;
+  if(!rows.length){el.innerHTML='<p style="color:var(--text3);text-align:center;padding:30px;">No students found.</p>';return;}
+  // Group tables
+  const groups=['Group A','Group B','Group C'];
+  el.innerHTML=groups.map(grp=>{
+    const grpRows=rows.filter(r=>(r.s.group||'Group A')===grp);
+    if(!grpRows.length) return '';
+    const subs=getSubjectsForGroup(grp);
+    return `
+      <div style="margin-bottom:24px;">
+        <div style="margin-bottom:10px;"><span class="group-badge ${groupClass(grp)}" style="font-size:0.9rem;padding:5px 14px;">${grp}</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>STUDENT</th>
+              ${subs.map(s=>`<th>${s.name.toUpperCase()}</th>`).join('')}
+              <th>TOTAL</th><th>%</th><th>GRADE</th><th>RANK</th>
+            </tr></thead>
+            <tbody>
+              ${grpRows.map((r,i)=>{
+                const subCells=subs.map(sub=>{
+                  const m=r.sm.find(x=>x.subjectId===sub.id);
+                  return `<td style="text-align:center;font-family:var(--font-heading);color:var(--cream)">${m?m.marks:'—'}</td>`;
+                }).join('');
+                const rankBadge=r.rank<=3?`<span class="rank-badge rank-${r.rank}">${r.rank}</span>`:r.rank;
+                return `<tr>
+                  <td style="color:var(--text3)">${i+1}</td>
+                  <td><strong style="color:var(--cream)">${r.s.name}</strong></td>
+                  ${subCells}
+                  <td style="font-family:var(--font-heading);color:var(--gold2)">${r.total}</td>
+                  <td style="font-family:var(--font-heading);color:var(--cream)">${r.pct}%</td>
+                  <td><span class="grade-badge ${gradeClass(r.grade)}">${r.grade}</span></td>
+                  <td>${rankBadge}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ===================== LEADERBOARD =====================
+function renderLeaderboard(){
+  const rows=getRankedStudents().filter(r=>r.hasMarks);
+  const el=document.getElementById('leaderboardContent');
+  if(!el) return;
+  if(!rows.length){el.innerHTML='<p style="color:var(--text3);text-align:center;padding:30px;">No marks recorded yet.</p>';return;}
+  const medals=['🥇','🥈','🥉'];
+  el.innerHTML=rows.map((r,i)=>`
+    <div class="leader-row ${i<3?'topper-glow':''}">
+      <div class="leader-rank">${i<3?medals[i]:`<span style="color:var(--text3)">${i+1}</span>`}</div>
+      <div class="leader-info">
+        <div class="leader-name">${r.s.name} ${i<3?'⭐':''}</div>
+        <div class="leader-class">${r.s.relation||'D/O'} ${r.s.father||''} · <span class="group-badge ${groupClass(r.s.group||'Group A')}" style="font-size:0.7rem;">${r.s.group||'Group A'}</span></div>
+      </div>
+      <div class="leader-score">
+        <div class="leader-pct">${r.pct}%</div>
+        <div class="leader-grade-wrap"><span class="grade-badge ${gradeClass(r.grade)}" style="width:24px;height:24px;font-size:0.75rem;">${r.grade}</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===================== CERTIFICATES TABLE =====================
+function renderCertsTable(){
+  const rows=getRankedStudents();
+  const certMap=DB.getCerts();
+  const el=document.getElementById('certsContent');
+  if(!el) return;
+  if(!rows.length){el.innerHTML='<p style="color:var(--text3);text-align:center;padding:30px;">No students found.</p>';return;}
+  el.innerHTML=`<div class="table-wrap"><table>
+    <thead><tr><th>RANK</th><th>STUDENT</th><th>GROUP</th><th>GRADE</th><th>THEME</th><th>CERT ID</th><th>ACTIONS</th></tr></thead>
+    <tbody>${rows.map(r=>{
+      const certId=certMap[r.s.id]||'—';
+      const rankBadge=r.rank<=3?`<span class="rank-badge rank-${r.rank}">${r.rank}</span>`:r.rank;
+      const theme=r.rank<=3?'⭐ PREMIUM':'BASIC';
+      const themeColor=r.rank<=3?'color:var(--gold2)':'color:var(--text3)';
+      return `<tr>
+        <td>${rankBadge}</td>
+        <td><strong style="color:var(--cream)">${r.s.name}</strong></td>
+        <td><span class="group-badge ${groupClass(r.s.group||'Group A')}">${r.s.group||'Group A'}</span></td>
+        <td><span class="grade-badge ${gradeClass(r.grade)}">${r.grade}</span></td>
+        <td style="font-family:var(--font-heading);font-size:0.75rem;${themeColor}">${theme}</td>
+        <td style="font-family:var(--font-heading);font-size:0.8rem;color:var(--gold2)">${certId}</td>
+        <td><div class="action-btns">
+          <button class="btn btn-navy btn-sm" onclick="previewStudentCert('${r.s.id}')">👁 PREVIEW</button>
+          <button class="btn btn-gold btn-sm" onclick="downloadStudentCert('${r.s.id}')">⬇ PDF</button>
+        </div></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+}
+
+// ===================== CERTIFICATE TEMPLATE ENGINE =====================
+// generateCertificateHTML(student, theme, certId, grade)
+// theme: 'basic' | 'premium'
+function generateCertificateHTML(student, theme, certId, grade){
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+  const relLong={'D/O':'daughter of','S/O':'son of','W/O':'wife of'};
+  const rel=student.relation||'D/O';
+  const fatherName=student.father||'';
+  const programme=settings.programme;
+  const startDate=settings.startDate;
+  const endDate=settings.endDate;
+  const certIdDisplay=certId||'CERT-2026-XXXX';
+
+  if(theme==='premium'){
+    return `
+    <div id="certificate" class="premium-theme" style="font-family:'Cormorant Garamond',serif;">
+      <div class="cert-texture"></div>
+      <div class="cert-header-overlay"></div>
+      <img src="logo.png" class="cert-watermark" style="position:absolute;top:56%;left:50%;transform:translate(-50%,-50%);width:400px;height:400px;opacity:.08;z-index:1;pointer-events:none;filter:grayscale(100%) sepia(25%) brightness(.82) contrast(1.05);mix-blend-mode:multiply;">
+      <div class="cert-outer-border"></div>
+      <div class="cert-inner-border"></div>
+      <div class="cert-corner cert-tl"></div>
+      <div class="cert-corner cert-tr"></div>
+      <div class="cert-corner cert-bl"></div>
+      <div class="cert-corner cert-br"></div>
+
+      <div class="cert-content p-layer" style="display:flex;flex-direction:column;">
+        <div class="p-header">
+          <img src="logo.png" class="p-logo" onerror="this.style.display='none'">
+          <div class="p-header-text">
+            <div class="p-arabic">مَكْتَبُ فَاطِمَةَ لِلْبَنَاتِ</div>
+            <div class="p-english">MAKTAB FATIMAH LIL BANAT</div>
+            <div class="p-tagline">KHAMMAM · TELANGANA</div>
+          </div>
+        </div>
+        <div class="p-title">CERTIFICATE</div>
+        <div class="p-intro">This is to proudly certify that</div>
+        <div class="p-name">${student.name}</div>
+        <div class="p-name-line"></div>
+        <div class="p-relation">${relLong[rel]||rel} ${fatherName}</div>
+        <div class="p-body">
+          Has successfully and commendably completed the
+          <strong>${programme}</strong> programme at
+          <strong>Maktab Fatimah Lil Banat</strong>, Khammam,
+          fulfilling all academic and spiritual requirements
+          with remarkable excellence and dedication to sacred Islamic learning.
+        </div>
+        <div class="p-info-row">
+          <div class="p-info-box">
+            <div class="p-info-label">Programme</div>
+            <div class="p-info-value">${programme}</div>
+          </div>
+          <div class="p-info-box">
+            <div class="p-info-label">Duration</div>
+            <div class="p-info-value">${startDate} – ${endDate}</div>
+          </div>
+          <div class="p-info-box">
+            <div class="p-info-label">Grade &amp; Award</div>
+            <div class="p-info-value">${grade}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-footer p-layer" style="display:flex;">
+        <div class="p-sig-block">
+          <div class="p-sig-img-wrap"><img src="principal.png" class="p-sig-img" style="width:130px;" onerror="this.style.display='none'"></div>
+          <div class="p-sig-line"></div>
+          <div class="p-sig-role">Principal</div>
+          <div class="p-sig-school">Maktab Fatimah Lil Banat</div>
+        </div>
+        <div class="p-sig-block">
+          <div class="p-sig-img-wrap"><img src="authorization.png" class="p-sig-img" style="width:140px;" onerror="this.style.display='none'"></div>
+          <div class="p-sig-line"></div>
+          <div class="p-sig-role">Under the Guidance Of</div>
+          <div class="p-sig-school-sm">Madrasa Idara Taleemul Islam</div>
+          <div class="p-sig-trust">Trust Khammam</div>
+        </div>
+      </div>
+      <div class="p-cert-id">Certificate ID: ${certIdDisplay} &nbsp;|&nbsp; Date: ${dateStr}</div>
+    </div>`;
+  } else {
+    // BASIC THEME
+    return `
+    <div id="certificate" class="basic-theme" style="font-family:'Cormorant Garamond',serif;">
+      <img src="logo.png" class="cert-watermark" style="position:absolute;top:54%;left:50%;transform:translate(-50%,-50%);width:360px;height:360px;opacity:.05;z-index:1;pointer-events:none;filter:grayscale(100%) sepia(10%) brightness(.65) contrast(1.1);mix-blend-mode:multiply;">
+      <div class="cert-outer-border"></div>
+      <div class="cert-inner-border"></div>
+      <div class="cert-corner cert-tl"></div>
+      <div class="cert-corner cert-tr"></div>
+      <div class="cert-corner cert-bl"></div>
+      <div class="cert-corner cert-br"></div>
+
+      <div class="cert-content b-layer" style="display:flex;">
+        <div class="b-header">
+          <img src="logo.png" class="b-logo" onerror="this.style.display='none'">
+          <div class="b-header-text">
+            <div class="b-arabic">مَكْتَبُ فَاطِمَةَ لِلْبَنَاتِ</div>
+            <div class="b-english">MAKTAB FATIMAH LIL BANAT</div>
+            <div class="b-tagline">Khammam, Telangana</div>
+          </div>
+        </div>
+        <div class="b-rule"></div>
+        <div class="b-cert-title">CERTIFICATE</div>
+        <div class="b-of-achievement">OF ACHIEVEMENT</div>
+        <div class="b-intro">This certificate is proudly presented to</div>
+        <div class="b-name">${student.name}</div>
+        <div class="b-name-line"></div>
+        <div class="b-body">
+          ${rel} ${fatherName}${fatherName?', ':''} for participating in the <strong>${programme}</strong>
+          and successfully completing the program from <strong>${startDate}</strong> to <strong>${endDate}</strong>
+          at <strong>Maktab Fatimah Lil Banat</strong>, Khammam, Telangana.
+        </div>
+        <div class="b-grade">Awarded: ${grade} Grade</div>
+        <div class="b-info-row">
+          <div class="b-info-box">
+            <div class="b-info-label">Programme</div>
+            <div class="b-info-value">${programme}</div>
+          </div>
+          <div class="b-info-box">
+            <div class="b-info-label">Duration</div>
+            <div class="b-info-value">${startDate} – ${endDate}</div>
+          </div>
+          <div class="b-info-box">
+            <div class="b-info-label">Grade &amp; Award</div>
+            <div class="b-info-value">${grade}</div>
+          </div>
+        </div>
+        <div class="b-footer">
+          <div class="b-sig-block">
+            <div class="b-sig-img-wrap"><img src="principal.png" style="height:44px;opacity:.85;display:block;position:relative;z-index:5;" onerror="this.style.display='none'"></div>
+            <div class="b-sig-line"></div>
+            <div class="b-sig-role">${settings.principal.toUpperCase()}</div>
+            <div class="b-sig-sub">Principal</div>
+          </div>
+          <div class="b-sig-block">
+            <div class="b-sig-img-wrap"><img src="authorization.png" style="height:44px;opacity:.85;display:block;position:relative;z-index:5;" onerror="this.style.display='none'"></div>
+            <div class="b-sig-line"></div>
+            <div class="b-sig-role">AUTHORIZED BY</div>
+            <div class="b-sig-sub">Madarsa Idara Taleemul Islam Trust</div>
+          </div>
+        </div>
+        <div class="b-cert-id">Certificate ID: ${certIdDisplay} &nbsp;|&nbsp; Date: ${dateStr}</div>
+      </div>
+    </div>`;
+  }
+}
+
+// ===================== CERT ID MANAGEMENT =====================
+async function getOrCreateCertId(studentId){
+  const certMap=DB.getCerts();
+  if(!certMap[studentId]){
+    certMap[studentId]=genCertId();
+    await DB.setCerts(certMap);
+  }
+  return certMap[studentId];
+}
+
+// ===================== PREVIEW CERTIFICATE =====================
+async function previewStudentCert(studentId){
+  const rows=getRankedStudents();
+  const row=rows.find(r=>r.s.id===studentId);
+  if(!row){toast('Student not found','error');return;}
+  APP.pendingCertStudent=studentId;
+  const theme=row.rank<=3?'premium':'basic';
+  const certId=await getOrCreateCertId(studentId);
+  const html=generateCertificateHTML(row.s,theme,certId,row.grade);
+  const area=document.getElementById('certPreviewArea');
+  area.innerHTML=html;
+  // Scale to fit modal
+  const modalInner=area.parentElement;
+  const w=modalInner.offsetWidth||900;
+  const scale=Math.min(1,(w-40)/1000);
+  const certEl=area.querySelector('#certificate');
+  if(certEl){
+    certEl.style.transform=`scale(${scale})`;
+    certEl.style.transformOrigin='top left';
+    area.style.height=Math.round(707*scale+20)+'px';
+  }
+  openModal('certPreviewModal');
+}
+function downloadPreviewCert(){
+  if(APP.pendingCertStudent) downloadStudentCert(APP.pendingCertStudent);
+}
+
+// ===================== DOWNLOAD CERTIFICATE PDF =====================
+async function downloadStudentCert(studentId){
+  const rows=getRankedStudents();
+  const row=rows.find(r=>r.s.id===studentId);
+  if(!row){toast('Student not found','error');return;}
+  const theme=row.rank<=3?'premium':'basic';
+  const certId=await getOrCreateCertId(studentId);
+  const html=generateCertificateHTML(row.s,theme,certId,row.grade);
+  const div=document.createElement('div');
+  div.innerHTML=html;
+  div.style.cssText='position:fixed;left:-9999px;top:0;z-index:-1;';
+  document.body.appendChild(div);
+  const certEl=div.querySelector('#certificate');
+  const opt={
+    margin:0,
+    filename:'Certificate_'+row.s.name.replace(/\s+/g,'_')+'.pdf',
+    image:{type:'jpeg',quality:1},
+    html2canvas:{scale:4.8,useCORS:true},
+    jsPDF:{unit:'px',format:[1000,707],orientation:'landscape'},
+  };
+  toast('Generating PDF for '+row.s.name+'...','info',4000);
+  html2pdf().set(opt).from(certEl).save().then(()=>{
+    document.body.removeChild(div);
+    toast('Certificate downloaded ✓','success');
+  });
+}
+
+// ===================== BULK GENERATE ALL =====================
+async function generateAllCertificates(){
+  const rows=getRankedStudents();
+  if(!rows.length){toast('No students found','error');return;}
+  toast('Generating '+rows.length+' certificates... Please wait. PDFs will download one by one.','info',15000);
+  for(let i=0;i<rows.length;i++){
+    await new Promise(resolve=>{
+      setTimeout(()=>{
+        downloadStudentCert(rows[i].s.id);
+        resolve();
+      },i*1500);
+    });
+  }
+}
+
+// ===================== DASHBOARD =====================
+function renderDashboard(){
+  const students=DB.getStudents();
+  const marks=DB.getMarks();
+  const rows=getRankedStudents();
+  const marked=students.filter(s=>marks.some(m=>m.studentId===s.id));
+  const grades={A:0,B:0,C:0,F:0};
+  const toppers=rows.filter(r=>r.hasMarks&&r.rank<=3).length;
+  rows.filter(r=>r.hasMarks).forEach(r=>{ grades[r.grade]=(grades[r.grade]||0)+1; });
+  const grpCounts={};
+  students.forEach(s=>{ const g=s.group||'Group A'; grpCounts[g]=(grpCounts[g]||0)+1; });
+  const statsRow=document.getElementById('statsRow');
+  if(statsRow) statsRow.innerHTML=`
+    <div class="stat-card"><div class="stat-val">${students.length}</div><div class="stat-lbl">TOTAL STUDENTS</div></div>
+    <div class="stat-card"><div class="stat-val">${marked.length}</div><div class="stat-lbl">EXAMINED</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:#74c69d">${grades.A}</div><div class="stat-lbl">GRADE A</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--gold2)">${grades.B}</div><div class="stat-lbl">GRADE B</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--gold2)">${toppers}</div><div class="stat-lbl">TOPPERS</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:#e07070">${grades.F}</div><div class="stat-lbl">FAILED</div></div>
+  `;
+  const ov=document.getElementById('overviewContent');
+  if(ov){
+    const pending=students.length-marked.length;
+    const topThree=rows.filter(r=>r.hasMarks).slice(0,3);
+    ov.innerHTML=`
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
+        <div style="flex:1;min-width:200px;">
+          <p style="color:var(--text3);font-size:0.8rem;margin-bottom:8px;">EXAMINATION PROGRESS</p>
+          <div class="progress-bar" style="height:10px;"><div class="progress-fill" style="width:${students.length?Math.round(marked.length/students.length*100):0}%"></div></div>
+          <p style="font-size:0.8rem;color:var(--cream3);margin-top:6px;">${marked.length} / ${students.length} examined · ${pending} pending</p>
+        </div>
+        <div style="flex:1;min-width:200px;">
+          <p style="color:var(--text3);font-size:0.8rem;margin-bottom:8px;">GROUP DISTRIBUTION</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            ${Object.entries(grpCounts).map(([g,n])=>`<span class="group-badge ${groupClass(g)}">${g}: ${n}</span>`).join('')}
+          </div>
+        </div>
+        <div style="flex:1;min-width:200px;">
+          <p style="color:var(--text3);font-size:0.8rem;margin-bottom:8px;">GRADE DISTRIBUTION</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            ${Object.entries(grades).map(([g,n])=>`<span class="grade-badge ${gradeClass(g)}" style="width:auto;padding:0 10px;border-radius:12px;">${g}: ${n}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+      ${topThree.length?`
+        <div style="margin-bottom:16px;">
+          <p style="color:var(--text3);font-size:0.8rem;margin-bottom:8px;">⭐ TOP STUDENTS</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            ${topThree.map((r,i)=>{
+              const medals=['🥇','🥈','🥉'];
+              return `<div style="flex:1;min-width:160px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:var(--radius);padding:12px;text-align:center;">
+                <div style="font-size:1.5rem;margin-bottom:4px;">${medals[i]}</div>
+                <div style="font-family:var(--font-heading);color:var(--cream);font-size:0.85rem;">${r.s.name}</div>
+                <div style="font-size:0.75rem;color:var(--text3);">${r.pct}% · <span class="grade-badge ${gradeClass(r.grade)}" style="width:20px;height:20px;font-size:0.7rem;">${r.grade}</span></div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+      `:''}
+      ${pending?`<div style="padding:12px;background:rgba(201,168,76,0.08);border-radius:8px;border-left:3px solid var(--gold);font-size:0.85rem;color:var(--cream3);">
+        ⚠️ <strong style="color:var(--gold2)">${pending} student(s)</strong> still pending examination.
+      </div>`:''}
+    `;
+  }
+}
+
+// ===================== EXPORT / IMPORT =====================
+function exportMarksCSV(){
+  const rows=getRankedStudents();
+  const lines=['Rank,Name,Father,Group,Roll,Total,Max,Percentage,Grade'];
+  rows.forEach(r=>{
+    lines.push([r.rank,r.s.name,(r.s.father||''),r.s.group||'Group A',r.s.roll||'',r.total,r.maxTotal,r.pct+'%',r.grade].join(','));
+  });
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(lines.join('\n'));
+  a.download='MaktabFatimah_Marks.csv';
+  a.click();
+}
+function exportAllData(){
+  const data={students:DB.getStudents(),marks:DB.getMarks(),certificates:DB.getCerts(),settings,exportedAt:new Date().toISOString()};
+  const a=document.createElement('a');
+  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(data,null,2));
+  a.download='MaktabFatimah_Backup_'+Date.now()+'.json';
+  a.click();
+  toast('Backup exported ✓','success');
+}
+function handleImport(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=async ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      if(data.students) await DB.setStudents(data.students);
+      if(data.marks) await DB.setMarks(data.marks);
+      if(data.certificates) await DB.setCerts(data.certificates);
+      if(data.settings){settings=data.settings;await DB.setSettings(settings);}
+      toast('Data imported successfully ✓','success');
+      renderDashboard();
+    }catch(err){toast('Import failed: Invalid file','error');}
+  };
+  r.readAsText(f);
+}
+async function clearAllData(){
+  if(!confirm('DELETE ALL DATA? This cannot be undone!')) return;
+  if(!confirm('Are you absolutely SURE?')) return;
+  await DB.setStudents([]);
+  await DB.setMarks([]);
+  await DB.setCerts({});
+  CACHE.students=[]; CACHE.marks=[]; CACHE.certificates={};
+  // Also clear localStorage fallback
+  [KEY.students,KEY.marks,KEY.certificates].forEach(k=>localStorage.removeItem(k));
+  toast('All data cleared','info');
+  renderDashboard();
+  renderStudentsTable();
+}
+
+// ===================== INIT =====================
+async function initApp(){
+  initFirebase();
+  updateSyncBadge(navigator.onLine?'syncing':'offline');
+  await loadAllFromFirebase();
+  attachFirebaseListeners();
+  await preloadStudents(); // only runs if students list is empty
+  renderDashboard();
+}
+
+function loadFirebaseConfigToForm(){
+  try {
+    const saved = localStorage.getItem('mf_fb_config');
+    if(saved){
+      const cfg = JSON.parse(saved);
+      if(document.getElementById('fbApiKey')) document.getElementById('fbApiKey').value=cfg.apiKey||'';
+      if(document.getElementById('fbDbUrl')) document.getElementById('fbDbUrl').value=cfg.databaseURL||'';
+      if(document.getElementById('fbProjectId')) document.getElementById('fbProjectId').value=cfg.projectId||'';
+      if(document.getElementById('fbAppId')) document.getElementById('fbAppId').value=cfg.appId||'';
+    }
+  } catch(e){}
+}
+// ===================== DYNAMIC FIREBASE CONFIG =====================
+function applyFirebaseConfig(){
+  const apiKey = document.getElementById('fbApiKey')?.value.trim();
+  const databaseURL = document.getElementById('fbDbUrl')?.value.trim();
+  const projectId = document.getElementById('fbProjectId')?.value.trim();
+  const appId = document.getElementById('fbAppId')?.value.trim();
+  if(!apiKey||!databaseURL||!projectId){
+    toast('Please fill in API Key, Database URL, and Project ID','error'); return;
+  }
+  // Store in localStorage for persistence
+  localStorage.setItem('mf_fb_config', JSON.stringify({apiKey,databaseURL,projectId,appId,authDomain:projectId+'.firebaseapp.com',storageBucket:projectId+'.appspot.com',messagingSenderId:''}));
+  // Delete existing Firebase app and reinitialize
+  try {
+    if(typeof firebase!=='undefined' && firebase.apps){
+      firebase.apps.slice().forEach(app=>{ try{app.delete();}catch(e){} });
+    }
+  } catch(e){}
+  db = null;
+  FIREBASE_CONFIG.apiKey=apiKey;
+  FIREBASE_CONFIG.databaseURL=databaseURL;
+  FIREBASE_CONFIG.projectId=projectId;
+  FIREBASE_CONFIG.appId=appId;
+  FIREBASE_CONFIG.authDomain=projectId+'.firebaseapp.com';
+  FIREBASE_CONFIG.storageBucket=projectId+'.appspot.com';
+  toast('Reconnecting to Firebase...','info');
+  initApp();
+}
+
+function loadSavedFirebaseConfig(){
+  try {
+    const saved = localStorage.getItem('mf_fb_config');
+    if(saved){
+      const cfg = JSON.parse(saved);
+      Object.assign(FIREBASE_CONFIG, cfg);
+      // Pre-fill settings form if open
+      if(document.getElementById('fbApiKey')) document.getElementById('fbApiKey').value=cfg.apiKey||'';
+      if(document.getElementById('fbDbUrl')) document.getElementById('fbDbUrl').value=cfg.databaseURL||'';
+      if(document.getElementById('fbProjectId')) document.getElementById('fbProjectId').value=cfg.projectId||'';
+      if(document.getElementById('fbAppId')) document.getElementById('fbAppId').value=cfg.appId||'';
+    }
+  } catch(e){}
+}
+
+// Keyboard: Enter to login
+document.getElementById('loginPass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('loginUser').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+// Load saved Firebase config on page load
+loadSavedFirebaseConfig();
+</script>
+</body>
+</html>
